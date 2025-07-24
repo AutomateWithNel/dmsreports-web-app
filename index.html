@@ -209,7 +209,7 @@
                 reports = await reportsRes.json();
 
                 // Load distributor links file
-                const linksRes = await fetch(`Distributors/${account}-links.json`);
+                const linksRes = await fetch(`/.netlify/functions/get-links?account=${account}`);
                 links = await linksRes.json();
 
                 badge.textContent = `Account: ${links.accountName || account}`;
