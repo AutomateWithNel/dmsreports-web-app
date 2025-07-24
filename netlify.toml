@@ -1,19 +1,34 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+# Function proxy redirects (must come first!)
 [[redirects]]
-  from = "/kagio"
-  to = "/.netlify/functions/get-links?account=kagio"
-  status = 200
+from = "/kagio"
+to = "/.netlify/functions/get-links?account=kagio"
+status = 200
+force = true
 
 [[redirects]]
-  from = "/kianyaga"
-  to = "/.netlify/functions/get-links?account=kianyaga"
-  status = 200
+from = "/kianyaga"
+to = "/.netlify/functions/get-links?account=kianyaga"
+status = 200
+force = true
 
 [[redirects]]
-  from = "/aievo"
-  to = "/.netlify/functions/get-links?account=aievo"
-  status = 200
+from = "/aievo"
+to = "/.netlify/functions/get-links?account=aievo"
+status = 200
+force = true
 
 [[redirects]]
-  from = "/kerugoya"
-  to = "/.netlify/functions/get-links?account=kerugoya"
-  status = 200
+from = "/kerugoya"
+to = "/.netlify/functions/get-links?account=kerugoya"
+status = 200
+force = true
+
+# SPA fallback: all other paths serve index.html
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

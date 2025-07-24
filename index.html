@@ -1,3 +1,5 @@
+// index.html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -209,7 +211,7 @@
                 reports = await reportsRes.json();
 
                 // Load distributor links file
-                const linksRes = await fetch(`/.netlify/functions/get-links?account=${account}`);
+                const linksRes = await fetch(`/${account}`);
                 links = await linksRes.json();
 
                 badge.textContent = `Account: ${links.accountName || account}`;
