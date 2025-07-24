@@ -1,33 +1,36 @@
 [build]
+  publish = "."  # since you're serving files from root
   functions = "netlify/functions"
 
-# Function proxy redirects (must come first!)
+# Serve index.html for all account routes
 [[redirects]]
 from = "/kagio"
-to = "/.netlify/functions/get-links?account=kagio"
+to = "/index.html"
 status = 200
-force = true
 
 [[redirects]]
 from = "/kianyaga"
-to = "/.netlify/functions/get-links?account=kianyaga"
+to = "/index.html"
 status = 200
-force = true
 
 [[redirects]]
 from = "/aievo"
-to = "/.netlify/functions/get-links?account=aievo"
+to = "/index.html"
 status = 200
-force = true
 
 [[redirects]]
 from = "/kerugoya"
-to = "/.netlify/functions/get-links?account=kerugoya"
-status = 200
-force = true
-
-# SPA fallback: all other paths serve index.html
-[[redirects]]
-from = "/*"
 to = "/index.html"
 status = 200
+
+# Fallback for root
+[[redirects]]
+from = "/"
+to = "/index.html"
+status = 200
+
+# Optional: if you have assets like /Assets/Favicon.png, make sure they still work
+[[headers]]
+  for = "/Assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"

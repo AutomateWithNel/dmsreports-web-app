@@ -185,73 +185,91 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
-            const reportGrid = document.getElementById("report-grid");
-            const badge = document.getElementById("account-badge");
-            const loginSection = document.getElementById("login-section");
-            const passwordInput = document.getElementById("password-input");
-            const loginBtn = document.getElementById("login-btn");
-            const loginError = document.getElementById("login-error");
+        const reportGrid = document.getElementById("report-grid");
+        const badge = document.getElementById("account-badge");
+        const loginSection = document.getElementById("login-section");
+        const passwordInput = document.getElementById("password-input");
+        const loginBtn = document.getElementById("login-btn");
+        const loginError = document.getElementById("login-error");
 
-            const params = new URLSearchParams(window.location.search);
-            const account = params.get("account");
+        // Extract account from path: /kagio → 'kagio'
+        const path = window.location.pathname;
+        const pathParts = path.split('/').filter(Boolean);
+        const account = pathParts.length > 0 ? pathParts[0] : null;
 
-            if (!account) {
-                badge.textContent = "Account: Missing or invalid";
-                reportGrid.style.display = "none";
-                loginSection.style.display = "none";
-                return;
+        if (!account) {
+        badge.textContent = "Account: Invalid or missing";
+        reportGrid.style.display = "none";
+        loginSection.style.display = "none";
+        return;
+        }
+
+        let reports, links;
+        try {
+        // Load report definitions
+        const reportsRes = await fetch("reports.json");
+        if (!reportsRes.ok) throw new Error("Failed to load reports.json");
+        reports = await reportsRes.json();
+
+        // Load account links from function
+        const linksRes = await fetch(`/.netlify/functions/get-links?account=${account}`);
+        if (!linksRes.ok) {
+            if (linksRes.status === 404) {
+            throw new Error("Account not found");
             }
+            throw new Error("Failed to load account links");
+        }
+        links = await linksRes.json();
 
-            let reports, links;
-            try {
-                // Load master report definitions
-                const reportsRes = await fetch("reports.json");
-                reports = await reportsRes.json();
-
-                // Load distributor links file
-                const linksRes = await fetch(`/${account}`);
-                links = await linksRes.json();
-
-                badge.textContent = `Account: ${links.accountName || account}`;
-            } catch (error) {
-                console.error("Error loading report data:", error);
-                badge.textContent = `Account: ${account}`;
-                loginSection.style.display = "none";
-                reportGrid.style.display = "block";
-                reportGrid.innerHTML = "<p class='loading'>Failed to load reports for this account.</p>";
-                return;
+        badge.textContent = `Account: ${links.accountName || account.charAt(0).toUpperCase() + account.slice(1)}`;
+        } catch (error) {
+        console.error("Error loading data:", error);
+        badge.textContent = `Account: ${account} (Error)`;
+        loginSection.style.display = "none";
+        reportGrid.style.display = "block";
+        reportGrid.innerHTML = `
+            <p style="color: red; text-align: center;">
+            ${error.message === "Account not found" 
+                ? "Account not found. Please check the URL." 
+                : "Failed to load reports. Contact support."
             }
+            </p>
+        `;
+        return;
+        }
 
-            loginBtn.onclick = function() {
-                const enteredPassword = passwordInput.value;
-                if (enteredPassword === links.password) {
-                    loginSection.style.display = "none";
-                    reportGrid.style.display = "grid";
-                    reportGrid.innerHTML = "";
-                    reports.forEach(report => {
-                        const url = links[report.id];
-                        if (!url) return;
-                        const reportCard = document.createElement("button");
-                        reportCard.classList.add("report-card");
-                        reportCard.onclick = () => window.open(url, "_blank");
-                        reportCard.innerHTML = `
-                            <h3 class=\"report-title\">${report.title}</h3>
-                            <p class=\"report-path\">${report.path}</p>
-                        `;
-                        reportGrid.appendChild(reportCard);
-                    });
-                    loginError.style.display = "none";
-                } else {
-                    loginError.textContent = "Incorrect password. Please try again or contact support.";
-                    loginError.style.display = "block";
-                }
-            };
+        // Login logic
+        loginBtn.onclick = function () {
+        const enteredPassword = passwordInput.value;
+        if (enteredPassword === links.password) {
+            loginSection.style.display = "none";
+            reportGrid.style.display = "grid";
+            reportGrid.innerHTML = "";
 
-            passwordInput.addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    loginBtn.click();
-                }
+            reports.forEach((report) => {
+            const url = links[report.id];
+            if (!url) return;
+
+            const reportCard = document.createElement("button");
+            reportCard.classList.add("report-card");
+            reportCard.onclick = () => window.open(url, "_blank");
+            reportCard.innerHTML = `
+                <h3 class="report-title">${report.title}</h3>
+                <p class="report-path">${report.path}</p>
+            `;
+            reportGrid.appendChild(reportCard);
             });
+            loginError.style.display = "none";
+        } else {
+            loginError.textContent = "Incorrect password. Please try again or contact support.";
+            loginError.style.display = "block";
+        }
+        };
+
+        // Allow Enter key to login
+        passwordInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") loginBtn.click();
+        });
         });
     </script>
 </body>
