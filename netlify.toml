@@ -29,8 +29,9 @@ from = "/"
 to = "/index.html"
 status = 200
 
-# Optional: if you have assets like /Assets/Favicon.png, make sure they still work
+# === ASSET CACHING ===
 [[headers]]
   for = "/Assets/*"
   [headers.values]
-    Cache-Control = "public, max-age=3600"
+    Cache-Control = "public, max-age=31536000, immutable"  # 1 year cache
+    Access-Control-Allow-Origin = "*"
