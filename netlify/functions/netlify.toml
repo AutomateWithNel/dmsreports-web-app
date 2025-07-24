@@ -1,0 +1,19 @@
+[[redirects]]
+  from = "/kagio"
+  to = "/.netlify/functions/get-links?account=kagio"
+  status = 200
+
+[[redirects]]
+  from = "/kianyaga"
+  to = "/.netlify/functions/get-links?account=kianyaga"
+  status = 200
+
+[[redirects]]
+  from = "/aievo"
+  to = "/.netlify/functions/get-links?account=aievo"
+  status = 200
+
+[[redirects]]
+  from = "/kerugoya"
+  to = "/.netlify/functions/get-links?account=kerugoya"
+  status = 200
