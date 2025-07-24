@@ -1,6 +1,7 @@
 // get-links.js
 exports.handler = async (event, context) => {
-  const { account } = event.queryStringParameters || {};
+  const path = event.path || '';
+  const account = path.split('/').filter(Boolean).pop();
   
   // Your account data - move your JSON files content here
   const accountData = {
