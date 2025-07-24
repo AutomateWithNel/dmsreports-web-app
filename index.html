@@ -193,82 +193,89 @@
         const loginError = document.getElementById("login-error");
 
         // Extract account from path: /kagio → 'kagio'
-        const path = window.location.pathname;
-        const pathParts = path.split('/').filter(Boolean);
-        const account = pathParts.length > 0 ? pathParts[0] : null;
+        const path = window.location.pathname; // "/kagio"
+        const pathParts = path.split("/").filter(Boolean); // ['kagio']
+        const account = pathParts.length > 0 ? pathParts[0].toLowerCase().trim() : null;
 
         if (!account) {
-        badge.textContent = "Account: Invalid or missing";
-        reportGrid.style.display = "none";
-        loginSection.style.display = "none";
-        return;
+            badge.textContent = "Account: Invalid or missing";
+            reportGrid.style.display = "none";
+            loginSection.style.display = "none";
+            return;
         }
+
+        badge.textContent = `Account: Loading ${account}...`;
 
         let reports, links;
         try {
-        // Load report definitions
-        const reportsRes = await fetch("reports.json");
-        if (!reportsRes.ok) throw new Error("Failed to load reports.json");
-        reports = await reportsRes.json();
+            // Load master report list (structure)
+            const reportsRes = await fetch("reports.json");
+            if (!reportsRes.ok) throw new Error("Failed to load reports.json");
+            reports = await reportsRes.json();
 
-        // Load account links from function
-        const linksRes = await fetch(`/.netlify/functions/get-links?account=${account}`);
-        if (!linksRes.ok) {
-            if (linksRes.status === 404) {
-            throw new Error("Account not found");
+            // Fetch account-specific links from function
+            const linksRes = await fetch(`/.netlify/functions/get-links?account=${account}`);
+            console.log("Response URL:", linksRes.url);
+            console.log("Response status:", linksRes.status);
+
+            if (!linksRes.ok) {
+            const errText = await linksRes.text();
+            console.error("Links fetch error:", errText);
+            throw new Error(`HTTP ${linksRes.status}: ${errText}`);
             }
-            throw new Error("Failed to load account links");
-        }
-        links = await linksRes.json();
 
-        badge.textContent = `Account: ${links.accountName || account.charAt(0).toUpperCase() + account.slice(1)}`;
+            links = await linksRes.json();
+            console.log("Fetched links:", links);
+
+            // Update badge
+            badge.textContent = `Account: ${links.accountName || account.toUpperCase()}`;
         } catch (error) {
-        console.error("Error loading data:", error);
-        badge.textContent = `Account: ${account} (Error)`;
-        loginSection.style.display = "none";
-        reportGrid.style.display = "block";
-        reportGrid.innerHTML = `
+            console.error("Failed to load data:", error);
+            badge.textContent = `Account: ${account}`;
+            loginSection.style.display = "none";
+            reportGrid.style.display = "block";
+            reportGrid.innerHTML = `
             <p style="color: red; text-align: center;">
-            ${error.message === "Account not found" 
-                ? "Account not found. Please check the URL." 
+                ${error.message.includes("Account not found") 
+                ? "Account not found. Please check the URL."
                 : "Failed to load reports. Contact support."
-            }
+                }
             </p>
-        `;
-        return;
+            `;
+            return;
         }
 
         // Login logic
         loginBtn.onclick = function () {
-        const enteredPassword = passwordInput.value;
-        if (enteredPassword === links.password) {
+            const enteredPassword = passwordInput.value;
+            if (enteredPassword === links.password) {
             loginSection.style.display = "none";
             reportGrid.style.display = "grid";
             reportGrid.innerHTML = "";
 
             reports.forEach((report) => {
-            const url = links[report.id];
-            if (!url) return;
+                const url = links[report.id];
+                if (!url) return;
 
-            const reportCard = document.createElement("button");
-            reportCard.classList.add("report-card");
-            reportCard.onclick = () => window.open(url, "_blank");
-            reportCard.innerHTML = `
+                const reportCard = document.createElement("button");
+                reportCard.classList.add("report-card");
+                reportCard.onclick = () => window.open(url, "_blank");
+                reportCard.innerHTML = `
                 <h3 class="report-title">${report.title}</h3>
                 <p class="report-path">${report.path}</p>
-            `;
-            reportGrid.appendChild(reportCard);
+                `;
+                reportGrid.appendChild(reportCard);
             });
             loginError.style.display = "none";
-        } else {
+            } else {
             loginError.textContent = "Incorrect password. Please try again or contact support.";
             loginError.style.display = "block";
-        }
+            }
         };
 
         // Allow Enter key to login
         passwordInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") loginBtn.click();
+            if (e.key === "Enter") loginBtn.click();
         });
         });
     </script>
