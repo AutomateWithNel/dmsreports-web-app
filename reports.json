@@ -1,0 +1,18 @@
+[
+  { "id": "sales_summary_salesman", "title": "Sales Summary By Salesman", "path": "Sales → Sales Summary By Salesman" },
+  { "id": "daily_sales_report", "title": "Daily Sales Report", "path": "Sales → Daily Sales Report (New)" },
+  { "id": "call_performance", "title": "Call Performance Report", "path": "Control → Call Performance Report (New)" },
+  { "id": "salesman_listing", "title": "Salesman Listing Report", "path": "Sales → Sales Performance Listing" },
+  { "id": "order_fulfillment", "title": "Order Fulfillment Report", "path": "Sales → Order Fulfillment Report" },
+  { "id": "sales_by_customer_summary", "title": "Sales By Customer Summary", "path": "Sales →Sales Report By Customer Summary" },
+  { "id": "sales_report_by_customer", "title": "Sales Report By Customer", "path": "Sales → Sales Report By Customer" },
+  { "id": "route_performance_target", "title": "Route Performance Target", "path": "Sales → Route Performance Target" },
+  { "id": "inventory_movement", "title": "Inventory Movement Report", "path": "Inventory → Inventory Movement By Warehouse" },
+  { "id": "certificate_issues_returns", "title": "Certificate of Issues & Returns ", "path": "Inventory → Certificate of Issues (NEW)" },
+  { "id": "company_invoice_report", "title": "Company Invoice Report", "path": "Inventory →  Inventory Journal Report-Company Invoice" },
+  { "id": "current_stock_report", "title": "Current Stock Report", "path": "Inventory → Current Stock" },
+  { "id": "promotion_monitoring", "title": "Promotion Monitoring", "path": "Control → Promotion Monitoring" },
+  { "id": "promotion_monitoring_report", "title": "Promotion Monitoring Report", "path": "Merchandising → Promotion Monitoring" },
+  { "id": "customer_master_data", "title": "Customer Master Data", "path": "Control → Customer Master Data" },
+  { "id": "product_master_details", "title": "Product Master Details", "path": "Control → Product Master Details" }
+]
